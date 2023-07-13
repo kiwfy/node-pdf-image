@@ -1,27 +1,36 @@
 // node-pdf
 
-var Promise = require("es6-promise").Promise;
+const Promise = require("es6-promise").Promise;
 
-var path = require("path");
-var fs   = require("fs");
-var util = require("util");
-var exec = require("child_process").exec;
+const path = require("path");
+const fs   = require("fs");
+const util = require("util");
+const exec = require("child_process").exec;
+const parse = require("shell-quote").parse;
 
 function PDFImage(pdfFilePath, options) {
-  if (!options) options = {};
+  if (!options) {
+    options = {};
+  }
 
-  this.pdfFilePath = pdfFilePath;
+  this.pdfFilePath = this.validateCommandBreak(pdfFilePath);
 
-  this.setPdfFileBaseName(options.pdfFileBaseName);
+  this.setPdfFileBaseName(this.validateCommandBreak(options.pdfFileBaseName));
   this.setConvertOptions(options.convertOptions);
-  this.setConvertExtension(options.convertExtension);
-  this.useGM = options.graphicsMagick || false;
-  this.combinedImage = options.combinedImage || false;
+  this.setConvertExtension(this.validateCommandBreak(options.convertExtension));
+  this.useGM = Boolean(options.graphicsMagick) || false;
+  this.combinedImage = Boolean(options.combinedImage) || false;
 
-  this.outputDirectory = options.outputDirectory || path.dirname(pdfFilePath);
+  this.outputDirectory = this.validateCommandBreak(options.outputDirectory) || path.dirname(pdfFilePath);
 }
 
 PDFImage.prototype = {
+  validateCommandBreak(cmdString) {
+    if (parse(cmdString).length > 1) {
+      throw Error('Command break input string, invalid characters detected');
+    }
+    return cmdString;
+  },
   constructGetInfoCommand: function () {
     return util.format(
       "pdfinfo \"%s\"",
