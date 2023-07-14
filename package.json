@@ -19,7 +19,7 @@
     "mocha": "~5.1.1"
   },
   "scripts": {
-    "test": "mocha tests/*"
+    "test": "mocha tests/*.js"
   },
   "license": "MIT"
 }
