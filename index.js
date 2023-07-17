@@ -27,7 +27,7 @@ function PDFImage(pdfFilePath, options) {
 PDFImage.prototype = {
   validateCommandBreak(cmdString) {
     if (parse(cmdString).length > 1) {
-      throw Error('Command break input string, invalid characters detected');
+      throw { message: 'Command break input string, invalid characters detected' };
     }
     return cmdString;
   },
